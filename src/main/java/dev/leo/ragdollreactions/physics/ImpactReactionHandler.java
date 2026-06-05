@@ -3,6 +3,10 @@ package dev.leo.ragdollreactions.physics;
 import dev.leo.ragdollreactions.RagdollReactions;
 import dev.leo.ragdollreactions.config.ReactionSettings;
 import dev.leo.sableplayerragdoll.api.RagdollAPI;
+import dev.leo.sableplayerragdoll.api.RagdollLaunchOptions;
+import dev.leo.sableplayerragdoll.api.RagdollLimbConfig;
+import dev.leo.sableplayerragdoll.api.RagdollLimbOptions;
+import dev.leo.sableplayerragdoll.block.entity.RagdollPartBlockEntity.BodyPart;
 import dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem;
 import java.util.ArrayDeque;
 import java.util.HashMap;
@@ -16,8 +20,11 @@ import org.joml.Vector3dc;
 
 public final class ImpactReactionHandler {
    private static final double BLOCKS_PER_TICK_TO_METERS_PER_SECOND = 20.0;
+   private static final double IMPACT_LIMB_STIFFNESS = 20.0;
+   private static final double IMPACT_ARM_ROLL_DEGREES = 100.0;
    private static final int STUMBLE_WINDOW_TICKS = 5;
    private static final long LAG_SKIP_THRESHOLD_NANOS = 100_000_000L;
+   private static final RagdollLaunchOptions IMPACT_LAUNCH_OPTIONS = RagdollLaunchOptions.builder().limbs(impactPose()).build();
 
    private static final Map<UUID, Long> PLAYER_COOLDOWNS = new HashMap<>();
    private static final Map<UUID, Vec3> LAST_PLAYER_POSITION = new HashMap<>();
@@ -86,7 +93,7 @@ public final class ImpactReactionHandler {
       Vector3d linear = composeLaunchLinear(launchSample.previousBlocksPerTick(), launchSample.currentBlocksPerTick(), launchSample.deltaBlocksPerTick());
       Vec3 launchVelocity = new Vec3(linear.x, linear.y, linear.z);
 
-      if (RagdollAPI.launch(player, launchVelocity) == null) {
+      if (RagdollAPI.launch(player, launchVelocity, IMPACT_LAUNCH_OPTIONS) == null) {
          return;
       }
 
@@ -169,6 +176,17 @@ public final class ImpactReactionHandler {
       }
 
       return linear;
+   }
+
+   private static RagdollLimbOptions impactPose() {
+      return RagdollLimbOptions.builder()
+         .limb(BodyPart.HEAD, RagdollLimbConfig.builder().stiffness(IMPACT_LIMB_STIFFNESS))
+         .limb(BodyPart.TORSO, RagdollLimbConfig.builder().stiffness(IMPACT_LIMB_STIFFNESS))
+         .limb(BodyPart.LEFT_ARM, RagdollLimbConfig.builder().stiffness(IMPACT_LIMB_STIFFNESS).roll(IMPACT_ARM_ROLL_DEGREES))
+         .limb(BodyPart.RIGHT_ARM, RagdollLimbConfig.builder().stiffness(IMPACT_LIMB_STIFFNESS).roll(-IMPACT_ARM_ROLL_DEGREES))
+         .limb(BodyPart.LEFT_LEG, RagdollLimbConfig.builder().stiffness(IMPACT_LIMB_STIFFNESS))
+         .limb(BodyPart.RIGHT_LEG, RagdollLimbConfig.builder().stiffness(IMPACT_LIMB_STIFFNESS))
+         .build();
    }
 
    private static boolean canTarget(ServerPlayer player, long gameTime) {
