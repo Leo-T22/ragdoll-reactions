@@ -18,15 +18,17 @@ public final class ReactionConfig {
       .define("enabled", true);
 
    static {
-      BUILDER.comment("When a sharp velocity change ragdolls the player.").push("trigger");
+      BUILDER.comment("When a sublevel impact ragdolls the player.").push("trigger");
    }
 
-   public static final DoubleValue MIN_VELOCITY_DELTA = BUILDER.comment(
-         "Minimum player velocity change over the 5-tick window (m/s). Covers braking, acceleration, and direction changes."
+   public static final DoubleValue MIN_SUBLEVEL_SPEED = BUILDER.comment(
+         "Minimum speed (m/s) of a sub-level at the player's position to consider an impact. Matches sable's own damage threshold (3.0)."
       )
-      .defineInRange("minVelocityDelta", 15.0, 0.5, 64.0);
-   public static final DoubleValue MAX_VELOCITY_DELTA = BUILDER.comment("Ignore velocity spikes above this (m/s) to filter teleports and chunk loads.")
-      .defineInRange("maxVelocityDelta", 120.0, 8.0, 256.0);
+      .defineInRange("minSubLevelSpeed", 3.0, 0.1, 64.0);
+   public static final DoubleValue MIN_VELOCITY_DELTA = BUILDER.comment(
+         "Minimum horizontal player velocity change over the 5-tick window (m/s) required to confirm the impact was felt."
+      )
+      .defineInRange("minVelocityDelta", 5.0, 0.1, 64.0);
    public static final IntValue COOLDOWN_TICKS = BUILDER.comment("Ticks before the same player can be auto-ragdolled again.")
       .defineInRange("cooldownTicks", 60, 0, 1200);
    public static final BooleanValue AFFECT_CREATIVE = BUILDER.comment("When true, creative-mode players can also be auto-ragdolled.")
@@ -77,8 +79,8 @@ public final class ReactionConfig {
 
    private static void apply() {
       ReactionSettings.setEnabled((Boolean) ENABLED.get());
+      ReactionSettings.setMinSubLevelSpeed((Double) MIN_SUBLEVEL_SPEED.get());
       ReactionSettings.setMinVelocityDelta((Double) MIN_VELOCITY_DELTA.get());
-      ReactionSettings.setMaxVelocityDelta((Double) MAX_VELOCITY_DELTA.get());
       ReactionSettings.setCooldownTicks((Integer) COOLDOWN_TICKS.get());
       ReactionSettings.setAffectCreative((Boolean) AFFECT_CREATIVE.get());
       ReactionSettings.setMaxLaunchSpeed((Double) MAX_LAUNCH_SPEED.get());

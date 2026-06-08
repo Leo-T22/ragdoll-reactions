@@ -2,8 +2,8 @@ package dev.leo.ragdollreactions.config;
 
 public final class ReactionSettings {
    private static boolean enabled = true;
-   private static double minVelocityDelta = 15.0;
-   private static double maxVelocityDelta = 120.0;
+   private static double minSubLevelSpeed = 3.0;
+   private static double minVelocityDelta = 5.0;
    private static double maxLaunchSpeed = 128.0;
    private static int cooldownTicks = 60;
    private static boolean affectCreative = true;
@@ -20,20 +20,20 @@ public final class ReactionSettings {
       enabled = value;
    }
 
+   public static double minSubLevelSpeed() {
+      return minSubLevelSpeed;
+   }
+
+   public static void setMinSubLevelSpeed(double value) {
+      minSubLevelSpeed = Math.max(0.1, value);
+   }
+
    public static double minVelocityDelta() {
       return minVelocityDelta;
    }
 
    public static void setMinVelocityDelta(double value) {
       minVelocityDelta = Math.max(0.1, value);
-   }
-
-   public static double maxVelocityDelta() {
-      return maxVelocityDelta;
-   }
-
-   public static void setMaxVelocityDelta(double value) {
-      maxVelocityDelta = Math.max(1.0, value);
    }
 
    public static double maxLaunchSpeed() {
@@ -43,6 +43,7 @@ public final class ReactionSettings {
    public static void setMaxLaunchSpeed(double value) {
       maxLaunchSpeed = Math.max(0.5, value);
    }
+
 
    public static int cooldownTicks() {
       return cooldownTicks;

@@ -7,6 +7,9 @@ import dev.leo.sableplayerragdoll.api.RagdollLaunchOptions;
 import dev.leo.sableplayerragdoll.api.RagdollLimbConfig;
 import dev.leo.sableplayerragdoll.api.RagdollLimbOptions;
 import dev.leo.sableplayerragdoll.block.entity.RagdollPartBlockEntity.BodyPart;
+import dev.ryanhcode.sable.Sable;
+import dev.ryanhcode.sable.companion.math.BoundingBox3d;
+import dev.ryanhcode.sable.sublevel.SubLevel;
 import dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem;
 import java.util.ArrayDeque;
 import java.util.HashMap;
@@ -14,6 +17,7 @@ import java.util.Map;
 import java.util.UUID;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -31,6 +35,7 @@ public final class ImpactReactionHandler {
    private static final Map<UUID, ArrayDeque<MotionSample>> PLAYER_MOTION_HISTORY = new HashMap<>();
    private static final Map<UUID, Long> LAST_PLAYER_SAMPLE_TICK = new HashMap<>();
    private static final Map<UUID, Long> LAST_PLAYER_SAMPLE_NANOS = new HashMap<>();
+   private static final Map<UUID, Long> LAST_SUBLEVEL_NEAR_TICK = new HashMap<>();
 
    private static boolean loggedFirstPhysicsTick;
 
@@ -44,7 +49,7 @@ public final class ImpactReactionHandler {
 
       if (!loggedFirstPhysicsTick) {
          loggedFirstPhysicsTick = true;
-         RagdollReactions.LOGGER.info("[ragdoll_reactions] accel/decel trigger active (debug={})", ReactionSettings.debugLogging());
+         RagdollReactions.LOGGER.info("[ragdoll_reactions] sublevel impact trigger active (debug={})", ReactionSettings.debugLogging());
       }
 
       ServerLevel level = physicsSystem.getLevel();
@@ -75,6 +80,12 @@ public final class ImpactReactionHandler {
          return;
       }
 
+      updateSubLevelProximity(level, player, gameTime);
+
+      if (!hasRecentSubLevelContext(playerId, gameTime)) {
+         return;
+      }
+
       Vec3 currentBlocksPerTick = sampleHorizontalWorldMotionBlocksPerTick(currentPosition, previousPosition);
       MotionSample previousSample = recordMotionSample(playerId, gameTime, currentBlocksPerTick);
       if (previousSample == null || !canTarget(player, gameTime)) {
@@ -100,13 +111,32 @@ public final class ImpactReactionHandler {
       PLAYER_COOLDOWNS.put(playerId, gameTime + (long) ReactionSettings.cooldownTicks());
       if (ReactionSettings.debugLogging()) {
          RagdollReactions.LOGGER.info(
-            "[ragdoll_reactions] {} trigger accel={} m/s speed={} m/s launch={} m/s",
+            "[ragdoll_reactions] {} sublevel hit delta={} m/s speed={} m/s launch={} m/s",
             player.getGameProfile().getName(),
             fmt(launchSample.deltaSpeed()),
             fmt(launchSample.currentSpeed()),
             fmtVec3dc(linear)
          );
       }
+   }
+
+   private static void updateSubLevelProximity(ServerLevel level, ServerPlayer player, long gameTime) {
+      double threshold = ReactionSettings.minSubLevelSpeed();
+      AABB searchAABB = player.getBoundingBox().inflate(1.0);
+      BoundingBox3d searchBounds = new BoundingBox3d(searchAABB);
+      Vector3d velDest = new Vector3d();
+      Vector3d playerPos = new Vector3d(player.getX(), player.getY(), player.getZ());
+      for (SubLevel subLevel : Sable.HELPER.getAllIntersecting(level, searchBounds)) {
+         if (Sable.HELPER.getVelocity(level, subLevel, playerPos, velDest).length() >= threshold) {
+            LAST_SUBLEVEL_NEAR_TICK.put(player.getUUID(), gameTime);
+            return;
+         }
+      }
+   }
+
+   private static boolean hasRecentSubLevelContext(UUID playerId, long gameTime) {
+      Long lastTick = LAST_SUBLEVEL_NEAR_TICK.get(playerId);
+      return lastTick != null && gameTime - lastTick <= STUMBLE_WINDOW_TICKS;
    }
 
    private static Vec3 sampleHorizontalWorldMotionBlocksPerTick(Vec3 currentPosition, Vec3 previousPosition) {
@@ -132,7 +162,7 @@ public final class ImpactReactionHandler {
          currentBlocksPerTick.z - previousBlocksPerTick.z
       );
       double deltaSpeed = deltaBlocksPerTick.length() * BLOCKS_PER_TICK_TO_METERS_PER_SECOND;
-      if (deltaSpeed < ReactionSettings.minVelocityDelta() || deltaSpeed > ReactionSettings.maxVelocityDelta()) {
+      if (deltaSpeed < ReactionSettings.minVelocityDelta()) {
          return null;
       }
 
@@ -190,7 +220,7 @@ public final class ImpactReactionHandler {
    }
 
    private static boolean canTarget(ServerPlayer player, long gameTime) {
-      if (player.isDeadOrDying() || player.isPassenger() || player.isSpectator() || player.isFallFlying() || player.getAbilities().flying) {
+      if (player.isDeadOrDying() || player.isSleeping() || player.isPassenger() || player.isSpectator() || player.isFallFlying() || player.getAbilities().flying) {
          return false;
       }
       if (player.isCreative() && !ReactionSettings.affectCreative()) {
@@ -205,6 +235,7 @@ public final class ImpactReactionHandler {
       PLAYER_MOTION_HISTORY.remove(playerId);
       LAST_PLAYER_SAMPLE_TICK.remove(playerId);
       LAST_PLAYER_SAMPLE_NANOS.remove(playerId);
+      LAST_SUBLEVEL_NEAR_TICK.remove(playerId);
       PLAYER_COOLDOWNS.put(playerId, player.serverLevel().getGameTime() + (long) ReactionSettings.cooldownTicks());
    }
 
@@ -214,6 +245,7 @@ public final class ImpactReactionHandler {
       PLAYER_MOTION_HISTORY.clear();
       LAST_PLAYER_SAMPLE_TICK.clear();
       LAST_PLAYER_SAMPLE_NANOS.clear();
+      LAST_SUBLEVEL_NEAR_TICK.clear();
    }
 
    private static String fmtVec3dc(Vector3dc vec) {
