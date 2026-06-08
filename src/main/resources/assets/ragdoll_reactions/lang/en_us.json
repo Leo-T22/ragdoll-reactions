@@ -1,0 +1,14 @@
+{
+  "ragdoll_reactions.configuration.title": "%s Config",
+  "ragdoll_reactions.configuration.section.ragdoll.reactions.server": "Server Config",
+  "ragdoll_reactions.configuration.enabled": "Enable Impact Reactions",
+  "ragdoll_reactions.configuration.trigger": "Trigger",
+  "ragdoll_reactions.configuration.min_sublevel_speed": "Minimum Sublevel Speed",
+  "ragdoll_reactions.configuration.min_velocity_delta": "Minimum Velocity Delta",
+  "ragdoll_reactions.configuration.cooldown_ticks": "Cooldown Ticks",
+  "ragdoll_reactions.configuration.affect_creative": "Affect Creative Players",
+  "ragdoll_reactions.configuration.launch": "Launch",
+  "ragdoll_reactions.configuration.max_launch_speed": "Max Launch Speed",
+  "ragdoll_reactions.configuration.debug": "Debug",
+  "ragdoll_reactions.configuration.debug_logging": "Debug Logging"
+}

@@ -14,42 +14,49 @@ import net.neoforged.neoforge.common.ModConfigSpec.IntValue;
 public final class ReactionConfig {
    private static final Builder BUILDER = new Builder();
 
-   public static final BooleanValue ENABLED = BUILDER.comment("Master switch for the accel/decel ragdoll trigger.")
+   public static final BooleanValue ENABLED = BUILDER.translation("ragdoll_reactions.configuration.enabled")
+      .comment("Master switch for the accel/decel ragdoll trigger.")
       .define("enabled", true);
 
    static {
-      BUILDER.comment("When a sublevel impact ragdolls the player.").push("trigger");
+      BUILDER.translation("ragdoll_reactions.configuration.trigger").comment("When a sublevel impact ragdolls the player.").push("trigger");
    }
 
-   public static final DoubleValue MIN_SUBLEVEL_SPEED = BUILDER.comment(
+   public static final DoubleValue MIN_SUBLEVEL_SPEED = BUILDER.translation("ragdoll_reactions.configuration.min_sublevel_speed")
+      .comment(
          "Minimum speed (m/s) of a sub-level at the player's position to consider an impact. Matches sable's own damage threshold (3.0)."
       )
       .defineInRange("minSubLevelSpeed", 3.0, 0.1, 64.0);
-   public static final DoubleValue MIN_VELOCITY_DELTA = BUILDER.comment(
+   public static final DoubleValue MIN_VELOCITY_DELTA = BUILDER.translation("ragdoll_reactions.configuration.min_velocity_delta")
+      .comment(
          "Minimum horizontal player velocity change over the 5-tick window (m/s) required to confirm the impact was felt."
       )
       .defineInRange("minVelocityDelta", 5.0, 0.1, 64.0);
-   public static final IntValue COOLDOWN_TICKS = BUILDER.comment("Ticks before the same player can be auto-ragdolled again.")
+   public static final IntValue COOLDOWN_TICKS = BUILDER.translation("ragdoll_reactions.configuration.cooldown_ticks")
+      .comment("Ticks before the same player can be auto-ragdolled again.")
       .defineInRange("cooldownTicks", 60, 0, 1200);
-   public static final BooleanValue AFFECT_CREATIVE = BUILDER.comment("When true, creative-mode players can also be auto-ragdolled.")
+   public static final BooleanValue AFFECT_CREATIVE = BUILDER.translation("ragdoll_reactions.configuration.affect_creative")
+      .comment("When true, creative-mode players can also be auto-ragdolled.")
       .define("affectCreative", true);
 
    static {
       BUILDER.pop();
-      BUILDER.comment("Launch velocity limits.").push("launch");
+      BUILDER.translation("ragdoll_reactions.configuration.launch").comment("Launch velocity limits.").push("launch");
    }
 
-   public static final DoubleValue MAX_LAUNCH_SPEED = BUILDER.comment(
+   public static final DoubleValue MAX_LAUNCH_SPEED = BUILDER.translation("ragdoll_reactions.configuration.max_launch_speed")
+      .comment(
          "Clamp total ragdoll launch speed after trigger detection (m/s). Above ~128 chunks cannot load fast enough to keep up."
       )
       .defineInRange("maxLaunchSpeed", 128.0, 1.0, 256.0);
 
    static {
       BUILDER.pop();
-      BUILDER.comment("Developer options.").push("debug");
+      BUILDER.translation("ragdoll_reactions.configuration.debug").comment("Developer options.").push("debug");
    }
 
-   public static final BooleanValue DEBUG_LOGGING = BUILDER.comment("Log trigger details to the server console.")
+   public static final BooleanValue DEBUG_LOGGING = BUILDER.translation("ragdoll_reactions.configuration.debug_logging")
+      .comment("Log trigger details to the server console.")
       .define("debugLogging", true);
 
    static {
