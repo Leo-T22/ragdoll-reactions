@@ -41,6 +41,26 @@ public final class ReactionConfig {
 
    static {
       BUILDER.pop();
+      BUILDER.translation("ragdoll_reactions.configuration.cannon_explosions")
+         .comment("Create Big Cannons explosion reactions.")
+         .push("cannonExplosions");
+   }
+
+   public static final BooleanValue CANNON_EXPLOSIONS_ENABLED = BUILDER.translation("ragdoll_reactions.configuration.cannon_explosions_enabled")
+      .comment("When true, Create Big Cannons custom explosions can ragdoll nearby players.")
+      .define("enabled", true);
+   public static final DoubleValue MIN_CANNON_EXPLOSION_POWER = BUILDER.translation("ragdoll_reactions.configuration.min_cannon_explosion_power")
+      .comment("Minimum Create Big Cannons explosion power required to trigger a ragdoll.")
+      .defineInRange("minPower", 1.0, 0.0, 256.0);
+   public static final DoubleValue CANNON_EXPLOSION_RADIUS_PADDING = BUILDER.translation("ragdoll_reactions.configuration.cannon_explosion_radius_padding")
+      .comment("Extra blocks added to the explosion entity radius when searching for nearby players.")
+      .defineInRange("radiusPadding", 2.0, 0.0, 64.0);
+   public static final DoubleValue CANNON_EXPLOSION_LAUNCH_MULTIPLIER = BUILDER.translation("ragdoll_reactions.configuration.cannon_explosion_launch_multiplier")
+      .comment("Launch speed multiplier applied to cannon explosion power before the global max launch speed clamp.")
+      .defineInRange("launchMultiplier", 20.0, 0.0, 128.0);
+
+   static {
+      BUILDER.pop();
       BUILDER.translation("ragdoll_reactions.configuration.launch").comment("Launch velocity limits.").push("launch");
    }
 
@@ -88,6 +108,10 @@ public final class ReactionConfig {
       ReactionSettings.setEnabled((Boolean) ENABLED.get());
       ReactionSettings.setMinSubLevelSpeed((Double) MIN_SUBLEVEL_SPEED.get());
       ReactionSettings.setMinVelocityDelta((Double) MIN_VELOCITY_DELTA.get());
+      ReactionSettings.setCannonExplosionsEnabled((Boolean) CANNON_EXPLOSIONS_ENABLED.get());
+      ReactionSettings.setMinCannonExplosionPower((Double) MIN_CANNON_EXPLOSION_POWER.get());
+      ReactionSettings.setCannonExplosionRadiusPadding((Double) CANNON_EXPLOSION_RADIUS_PADDING.get());
+      ReactionSettings.setCannonExplosionLaunchMultiplier((Double) CANNON_EXPLOSION_LAUNCH_MULTIPLIER.get());
       ReactionSettings.setCooldownTicks((Integer) COOLDOWN_TICKS.get());
       ReactionSettings.setAffectCreative((Boolean) AFFECT_CREATIVE.get());
       ReactionSettings.setMaxLaunchSpeed((Double) MAX_LAUNCH_SPEED.get());

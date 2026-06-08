@@ -28,6 +28,7 @@ public final class ImpactReactionHandler {
    private static final double IMPACT_ARM_ROLL_DEGREES = 100.0;
    private static final int STUMBLE_WINDOW_TICKS = 5;
    private static final long LAG_SKIP_THRESHOLD_NANOS = 100_000_000L;
+   private static final double MIN_EXPLOSION_DIRECTION_LENGTH = 1.0E-4;
    private static final RagdollLaunchOptions IMPACT_LAUNCH_OPTIONS = RagdollLaunchOptions.builder().limbs(impactPose()).build();
 
    private static final Map<UUID, Long> PLAYER_COOLDOWNS = new HashMap<>();
@@ -120,6 +121,57 @@ public final class ImpactReactionHandler {
       }
    }
 
+   public static void onCannonExplosion(ServerLevel level, Vec3 center, double power, double radius) {
+      if (!ReactionSettings.enabled() || !ReactionSettings.cannonExplosionsEnabled()) {
+         return;
+      }
+      if (power < ReactionSettings.minCannonExplosionPower()) {
+         return;
+      }
+
+      double effectiveRadius = Math.max(radius, power * 2.0) + ReactionSettings.cannonExplosionRadiusPadding();
+      double effectiveRadiusSqr = effectiveRadius * effectiveRadius;
+      long gameTime = level.getGameTime();
+      for (ServerPlayer player : level.players()) {
+         if (!canTarget(player, gameTime) || RagdollAPI.isRagdolled(player)) {
+            continue;
+         }
+
+         Vec3 playerCenter = player.getBoundingBox().getCenter();
+         double distanceSqr = playerCenter.distanceToSqr(center);
+         if (distanceSqr > effectiveRadiusSqr) {
+            continue;
+         }
+
+         Vec3 direction = playerCenter.subtract(center);
+         if (direction.lengthSqr() < MIN_EXPLOSION_DIRECTION_LENGTH) {
+            direction = new Vec3(0.0, 1.0, 0.0);
+         } else {
+            direction = direction.normalize();
+         }
+
+         double distance = Math.sqrt(distanceSqr);
+         double falloff = 1.0 - Math.min(distance / effectiveRadius, 1.0);
+         double launchSpeed = power * ReactionSettings.cannonExplosionLaunchMultiplier() * Math.max(0.25, falloff);
+         Vector3d clampedLaunch = clampLinearVelocity(toJoml(direction.scale(launchSpeed)));
+         Vec3 launchVelocity = new Vec3(clampedLaunch.x, clampedLaunch.y, clampedLaunch.z);
+         if (RagdollAPI.launch(player, launchVelocity, IMPACT_LAUNCH_OPTIONS) == null) {
+            continue;
+         }
+
+         PLAYER_COOLDOWNS.put(player.getUUID(), gameTime + (long) ReactionSettings.cooldownTicks());
+         if (ReactionSettings.debugLogging()) {
+            RagdollReactions.LOGGER.info(
+               "[ragdoll_reactions] {} cannon explosion tumble power={} radius={} launch={} m/s",
+               player.getGameProfile().getName(),
+               fmt(power),
+               fmt(effectiveRadius),
+               fmtVec3dc(clampedLaunch)
+            );
+         }
+      }
+   }
+
    private static void updateSubLevelProximity(ServerLevel level, ServerPlayer player, long gameTime) {
       double threshold = ReactionSettings.minSubLevelSpeed();
       AABB searchAABB = player.getBoundingBox().inflate(1.0);
@@ -196,6 +248,10 @@ public final class ImpactReactionHandler {
 
    private static Vector3d toMetersPerSecond(Vector3d blocksPerTick) {
       return new Vector3d(blocksPerTick).mul(BLOCKS_PER_TICK_TO_METERS_PER_SECOND);
+   }
+
+   private static Vector3d toJoml(Vec3 vec) {
+      return new Vector3d(vec.x, vec.y, vec.z);
    }
 
    private static Vector3d clampLinearVelocity(Vector3d linear) {

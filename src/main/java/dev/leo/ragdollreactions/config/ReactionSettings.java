@@ -4,6 +4,10 @@ public final class ReactionSettings {
    private static boolean enabled = true;
    private static double minSubLevelSpeed = 3.0;
    private static double minVelocityDelta = 5.0;
+   private static boolean cannonExplosionsEnabled = true;
+   private static double minCannonExplosionPower = 1.0;
+   private static double cannonExplosionRadiusPadding = 2.0;
+   private static double cannonExplosionLaunchMultiplier = 20.0;
    private static double maxLaunchSpeed = 128.0;
    private static int cooldownTicks = 60;
    private static boolean affectCreative = true;
@@ -34,6 +38,38 @@ public final class ReactionSettings {
 
    public static void setMinVelocityDelta(double value) {
       minVelocityDelta = Math.max(0.1, value);
+   }
+
+   public static boolean cannonExplosionsEnabled() {
+      return cannonExplosionsEnabled;
+   }
+
+   public static void setCannonExplosionsEnabled(boolean value) {
+      cannonExplosionsEnabled = value;
+   }
+
+   public static double minCannonExplosionPower() {
+      return minCannonExplosionPower;
+   }
+
+   public static void setMinCannonExplosionPower(double value) {
+      minCannonExplosionPower = Math.max(0.0, value);
+   }
+
+   public static double cannonExplosionRadiusPadding() {
+      return cannonExplosionRadiusPadding;
+   }
+
+   public static void setCannonExplosionRadiusPadding(double value) {
+      cannonExplosionRadiusPadding = Math.max(0.0, value);
+   }
+
+   public static double cannonExplosionLaunchMultiplier() {
+      return cannonExplosionLaunchMultiplier;
+   }
+
+   public static void setCannonExplosionLaunchMultiplier(double value) {
+      cannonExplosionLaunchMultiplier = Math.max(0.0, value);
    }
 
    public static double maxLaunchSpeed() {
