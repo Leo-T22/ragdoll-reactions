@@ -8,6 +8,7 @@
   "ragdoll_reactions.configuration.suppression_riptide": "Riptide",
   "ragdoll_reactions.configuration.suppression_bounce": "Bounce Blocks",
   "ragdoll_reactions.configuration.suppression_elytra_flight": "Elytra Flight",
+  "ragdoll_reactions.configuration.suppression_rope_climbing": "Rope Climbing",
   "ragdoll_reactions.configuration.suppression_chain_conveyor": "Chain Conveyor Riding",
   "ragdoll_reactions.configuration.suppression_enabled": "Enabled",
   "ragdoll_reactions.configuration.grace_ticks": "Grace Ticks",

@@ -138,6 +138,7 @@ public final class ReactionSettings {
       private final Suppression riptide = new Suppression(true, 15);
       private final Suppression bounce = new Suppression(true, 10);
       private final Suppression elytraFlight = new Suppression(true, 10);
+      private final Suppression ropeClimbing = new Suppression(true, 10);
       private final Suppression chainConveyor = new Suppression(true, 10);
 
       private Suppressions() {
@@ -153,6 +154,10 @@ public final class ReactionSettings {
 
       public Suppression elytraFlight() {
          return elytraFlight;
+      }
+
+      public Suppression ropeClimbing() {
+         return ropeClimbing;
       }
 
       public Suppression chainConveyor() {

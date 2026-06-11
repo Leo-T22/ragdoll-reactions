@@ -31,6 +31,8 @@ public final class ReactionSuppressions {
          grace = suppressions.bounce().graceTicks();
       } else if (suppressions.elytraFlight().enabled() && player.isFallFlying()) {
          grace = suppressions.elytraFlight().graceTicks();
+      } else if (suppressions.ropeClimbing().enabled() && isMarkedAsRopeRiding(player)) {
+         grace = suppressions.ropeClimbing().graceTicks();
       } else if (suppressions.chainConveyor().enabled() && isHangingOnChainConveyor(player)) {
          grace = suppressions.chainConveyor().graceTicks();
       }
@@ -65,6 +67,10 @@ public final class ReactionSuppressions {
    }
 
    private static boolean isHangingOnChainConveyor(ServerPlayer player) {
+      return isMarkedAsRopeRiding(player);
+   }
+
+   private static boolean isMarkedAsRopeRiding(ServerPlayer player) {
       if (!triedChainConveyorReflection) {
          triedChainConveyorReflection = true;
          try {

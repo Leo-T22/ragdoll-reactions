@@ -100,6 +100,18 @@ public final class ReactionConfig {
 
    static {
       BUILDER.pop();
+      BUILDER.translation("ragdoll_reactions.configuration.suppression_rope_climbing").comment("Create Aeronautics Climbable Ropes suppression.").push("ropeClimbing");
+   }
+
+   public static final BooleanValue SUPPRESS_ROPE_CLIMBING_ENABLED = BUILDER.translation("ragdoll_reactions.configuration.suppression_enabled")
+      .comment("When true, climbing ropes from Create Aeronautics Climbable Ropes will not trigger movement reactions. Requires Create/Simulated.")
+      .define("enabled", true);
+   public static final IntValue ROPE_CLIMBING_GRACE_TICKS = BUILDER.translation("ragdoll_reactions.configuration.grace_ticks")
+      .comment("Ticks to keep suppressing after the player stops climbing a rope.")
+      .defineInRange("graceTicks", 10, 0, 200);
+
+   static {
+      BUILDER.pop();
       BUILDER.translation("ragdoll_reactions.configuration.suppression_chain_conveyor").comment("Create chain conveyor riding suppression.").push("chainConveyor");
    }
 
@@ -264,6 +276,8 @@ public final class ReactionConfig {
       suppressions.bounce().setGraceTicks((Integer) BOUNCE_GRACE_TICKS.get());
       suppressions.elytraFlight().setEnabled((Boolean) SUPPRESS_ELYTRA_FLIGHT_ENABLED.get());
       suppressions.elytraFlight().setGraceTicks((Integer) ELYTRA_FLIGHT_GRACE_TICKS.get());
+      suppressions.ropeClimbing().setEnabled((Boolean) SUPPRESS_ROPE_CLIMBING_ENABLED.get());
+      suppressions.ropeClimbing().setGraceTicks((Integer) ROPE_CLIMBING_GRACE_TICKS.get());
       suppressions.chainConveyor().setEnabled((Boolean) SUPPRESS_CHAIN_CONVEYOR_ENABLED.get());
       suppressions.chainConveyor().setGraceTicks((Integer) CHAIN_CONVEYOR_GRACE_TICKS.get());
 
