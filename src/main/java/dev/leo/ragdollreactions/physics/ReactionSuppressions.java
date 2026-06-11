@@ -57,11 +57,17 @@ public final class ReactionSuppressions {
       SUPPRESS_UNTIL_TICK.remove(playerId);
    }
 
+   public static void suppress(ServerPlayer player, long gameTime, int graceTicks) {
+      if (graceTicks > 0) {
+         SUPPRESS_UNTIL_TICK.put(player.getUUID(), gameTime + graceTicks);
+      }
+   }
+
    public static void reset() {
       SUPPRESS_UNTIL_TICK.clear();
    }
 
-   private static boolean isOnBounceBlock(ServerLevel level, ServerPlayer player) {
+   static boolean isOnBounceBlock(ServerLevel level, ServerPlayer player) {
       BlockState below = level.getBlockState(player.blockPosition().below());
       return below.is(Blocks.SLIME_BLOCK) || below.getBlock() instanceof BedBlock;
    }

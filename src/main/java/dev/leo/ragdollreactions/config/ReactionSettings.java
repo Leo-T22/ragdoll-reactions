@@ -140,6 +140,7 @@ public final class ReactionSettings {
       private final Suppression elytraFlight = new Suppression(true, 10);
       private final Suppression ropeClimbing = new Suppression(true, 10);
       private final Suppression chainConveyor = new Suppression(true, 10);
+      private final Suppression selfWindCharge = new Suppression(true, 10);
 
       private Suppressions() {
       }
@@ -162,6 +163,10 @@ public final class ReactionSettings {
 
       public Suppression chainConveyor() {
          return chainConveyor;
+      }
+
+      public Suppression selfWindCharge() {
+         return selfWindCharge;
       }
    }
 

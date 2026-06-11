@@ -68,7 +68,7 @@ public final class RagdollReactionsNeoForge {
       if (isCreateBigCannonsExplosion(explosion)) {
          ExplosionReactionHandler.onCannonExplosion(level, explosion.center(), explosion.radius(), entityRadius(explosion));
       } else {
-         ExplosionReactionHandler.onVanillaExplosion(level, explosion.center(), explosion.radius());
+         ExplosionReactionHandler.onVanillaExplosion(level, explosion);
       }
    }
 

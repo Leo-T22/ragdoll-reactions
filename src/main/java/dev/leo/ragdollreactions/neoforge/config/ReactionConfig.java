@@ -124,6 +124,18 @@ public final class ReactionConfig {
 
    static {
       BUILDER.pop();
+      BUILDER.translation("ragdoll_reactions.configuration.suppression_self_wind_charge").comment("Self-thrown wind charge suppression.").push("selfWindCharge");
+   }
+
+   public static final BooleanValue SUPPRESS_SELF_WIND_CHARGE_ENABLED = BUILDER.translation("ragdoll_reactions.configuration.suppression_enabled")
+      .comment("When true, self-thrown wind charges will not ragdoll the throwing player.")
+      .define("enabled", true);
+   public static final IntValue SELF_WIND_CHARGE_GRACE_TICKS = BUILDER.translation("ragdoll_reactions.configuration.grace_ticks")
+      .comment("Ticks to suppress movement reactions after a self-thrown wind charge explodes.")
+      .defineInRange("graceTicks", 10, 0, 200);
+
+   static {
+      BUILDER.pop();
       BUILDER.pop();
       BUILDER.translation("ragdoll_reactions.configuration.triggers").comment("Reaction trigger sources.").push("triggers");
       BUILDER.translation("ragdoll_reactions.configuration.trigger_impact").comment("Sharp horizontal velocity change reactions.").push("impact");
@@ -280,6 +292,8 @@ public final class ReactionConfig {
       suppressions.ropeClimbing().setGraceTicks((Integer) ROPE_CLIMBING_GRACE_TICKS.get());
       suppressions.chainConveyor().setEnabled((Boolean) SUPPRESS_CHAIN_CONVEYOR_ENABLED.get());
       suppressions.chainConveyor().setGraceTicks((Integer) CHAIN_CONVEYOR_GRACE_TICKS.get());
+      suppressions.selfWindCharge().setEnabled((Boolean) SUPPRESS_SELF_WIND_CHARGE_ENABLED.get());
+      suppressions.selfWindCharge().setGraceTicks((Integer) SELF_WIND_CHARGE_GRACE_TICKS.get());
 
       ReactionSettings.Triggers triggers = ReactionSettings.triggers();
       triggers.impact().setEnabled((Boolean) IMPACT_ENABLED.get());

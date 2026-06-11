@@ -21,6 +21,9 @@ public final class FallReactionHandler {
       if (fallDistance < fall.minDistance()) {
          return;
       }
+      if (ReactionSettings.suppressions().bounce().enabled() && ReactionSuppressions.isOnBounceBlock(player.serverLevel(), player)) {
+         return;
+      }
 
       long gameTime = player.serverLevel().getGameTime();
       if (!ReactionLauncher.canTarget(player, gameTime)) {
