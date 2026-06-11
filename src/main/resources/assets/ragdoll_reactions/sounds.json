@@ -1,0 +1,8 @@
+{
+  "punch": {
+    "subtitle": "ragdoll_reactions.subtitle.punch",
+    "sounds": [
+      "ragdoll_reactions:punch"
+    ]
+  }
+}
