@@ -239,7 +239,7 @@ public final class ReactionSettings {
 
    public static final class Impact {
       private boolean enabled = true;
-      private double minVelocityDelta = 15.0;
+      private double minVelocityDelta = 20.0;
       private double maxVelocityDelta = 120.0;
 
       private Impact() {
