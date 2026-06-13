@@ -103,8 +103,7 @@ public final class ImpactReactionHandler {
       return player.isDeadOrDying()
          || player.isSleeping()
          || player.isPassenger()
-         || player.isSpectator()
-         || player.getAbilities().flying;
+         || player.isSpectator();
    }
 
    private static Vec3 sampleHorizontalWorldMotionBlocksPerTick(Vec3 currentPosition, Vec3 previousPosition) {

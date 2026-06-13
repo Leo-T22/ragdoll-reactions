@@ -3,6 +3,8 @@ package dev.leo.ragdollreactions.physics;
 import dev.leo.ragdollreactions.RagdollReactions;
 import dev.leo.ragdollreactions.config.ReactionSettings;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3d;
 
@@ -13,17 +15,22 @@ public final class FallReactionHandler {
    private FallReactionHandler() {
    }
 
-   public static void onHardLanding(ServerPlayer player, float fallDistance) {
+   public static void onPlayerDamaged(ServerPlayer player, DamageSource source, float fallDamage) {
       ReactionSettings.Fall fall = ReactionSettings.triggers().fall();
       if (!ReactionSettings.enabled() || !fall.enabled()) {
          return;
       }
-      if (fallDistance < fall.minDistance()) {
+      if (!source.is(DamageTypes.FALL)) {
+         return;
+      }
+      if (fallDamage < fall.minDamage()) {
          return;
       }
       if (ReactionSettings.suppressions().bounce().enabled() && ReactionSuppressions.isOnBounceBlock(player.serverLevel(), player)) {
          return;
       }
+
+      float fallDistance = player.fallDistance;
 
       long gameTime = player.serverLevel().getGameTime();
       if (!ReactionLauncher.canTarget(player, gameTime)) {
@@ -47,9 +54,10 @@ public final class FallReactionHandler {
 
       if (ReactionSettings.general().debug().logging()) {
          RagdollReactions.LOGGER.info(
-            "[ragdoll_reactions] {} hard landing fall={} blocks impact={} m/s launch={} m/s",
+            "[ragdoll_reactions] {} hard landing fall={} blocks damage={} impact={} m/s launch={} m/s",
             player.getGameProfile().getName(),
             ReactionLauncher.fmt(fallDistance),
+            ReactionLauncher.fmt(fallDamage),
             ReactionLauncher.fmt(impactSpeed),
             ReactionLauncher.fmtVec(launched)
          );

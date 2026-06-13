@@ -138,9 +138,10 @@ public final class ReactionSettings {
       private final Suppression riptide = new Suppression(true, 15);
       private final Suppression bounce = new Suppression(true, 10);
       private final Suppression elytraFlight = new Suppression(true, 10);
+      private final Suppression creativeFlight = new Suppression(true, 10);
       private final Suppression ropeClimbing = new Suppression(true, 10);
       private final Suppression chainConveyor = new Suppression(true, 10);
-      private final Suppression selfWindCharge = new Suppression(true, 10);
+      private final WindCharge windCharge = new WindCharge();
 
       private Suppressions() {
       }
@@ -157,6 +158,10 @@ public final class ReactionSettings {
          return elytraFlight;
       }
 
+      public Suppression creativeFlight() {
+         return creativeFlight;
+      }
+
       public Suppression ropeClimbing() {
          return ropeClimbing;
       }
@@ -165,8 +170,41 @@ public final class ReactionSettings {
          return chainConveyor;
       }
 
-      public Suppression selfWindCharge() {
-         return selfWindCharge;
+      public WindCharge windCharge() {
+         return windCharge;
+      }
+   }
+
+   public static final class WindCharge {
+      private boolean suppressAll = false;
+      private boolean suppressSelf = true;
+      private int graceTicks = 10;
+
+      private WindCharge() {
+      }
+
+      public boolean suppressAll() {
+         return suppressAll;
+      }
+
+      public void setSuppressAll(boolean value) {
+         suppressAll = value;
+      }
+
+      public boolean suppressSelf() {
+         return suppressSelf;
+      }
+
+      public void setSuppressSelf(boolean value) {
+         suppressSelf = value;
+      }
+
+      public int graceTicks() {
+         return graceTicks;
+      }
+
+      public void setGraceTicks(int value) {
+         graceTicks = Math.max(0, value);
       }
    }
 
@@ -356,7 +394,7 @@ public final class ReactionSettings {
 
    public static final class Fall {
       private boolean enabled = true;
-      private double minDistance = 6.0;
+      private double minDamage = 4.0;
       private double slamMultiplier = 0.5;
 
       private Fall() {
@@ -370,12 +408,12 @@ public final class ReactionSettings {
          enabled = value;
       }
 
-      public double minDistance() {
-         return minDistance;
+      public double minDamage() {
+         return minDamage;
       }
 
-      public void setMinDistance(double value) {
-         minDistance = Math.max(1.0, value);
+      public void setMinDamage(double value) {
+         minDamage = Math.max(0.0, value);
       }
 
       public double slamMultiplier() {

@@ -19,7 +19,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
@@ -39,7 +38,6 @@ public final class RagdollReactionsNeoForge {
       modBus.addListener(RagdollReactionsNeoForge::onCommonSetup);
       NeoForge.EVENT_BUS.addListener(RagdollReactionsNeoForge::onRagdollEnd);
       NeoForge.EVENT_BUS.addListener(RagdollReactionsNeoForge::onExplosionDetonate);
-      NeoForge.EVENT_BUS.addListener(RagdollReactionsNeoForge::onLivingFall);
       NeoForge.EVENT_BUS.addListener(RagdollReactionsNeoForge::onLivingDamagePre);
       NeoForge.EVENT_BUS.addListener(RagdollReactionsNeoForge::onLivingDamagePost);
       NeoForge.EVENT_BUS.addListener(RagdollReactionsNeoForge::onEntityStruckByLightning);
@@ -72,15 +70,10 @@ public final class RagdollReactionsNeoForge {
       }
    }
 
-   private static void onLivingFall(LivingFallEvent event) {
-      if (event.getEntity() instanceof ServerPlayer player) {
-         FallReactionHandler.onHardLanding(player, event.getDistance());
-      }
-   }
-
    private static void onLivingDamagePre(LivingDamageEvent.Pre event) {
       if (event.getEntity() instanceof ServerPlayer player) {
          CrashReactionHandler.onPlayerDamaged(player, event.getSource(), event.getOriginalDamage(), event.getNewDamage());
+         FallReactionHandler.onPlayerDamaged(player, event.getSource(), event.getNewDamage());
       }
    }
 

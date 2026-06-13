@@ -100,6 +100,18 @@ public final class ReactionConfig {
 
    static {
       BUILDER.pop();
+      BUILDER.translation("ragdoll_reactions.configuration.suppression_creative_flight").comment("Creative/spectator-style flight movement suppression.").push("creativeFlight");
+   }
+
+   public static final BooleanValue SUPPRESS_CREATIVE_FLIGHT_ENABLED = BUILDER.translation("ragdoll_reactions.configuration.suppression_enabled")
+      .comment("When true, creative flight and its landing deceleration will not trigger movement reactions.")
+      .define("enabled", true);
+   public static final IntValue CREATIVE_FLIGHT_GRACE_TICKS = BUILDER.translation("ragdoll_reactions.configuration.grace_ticks")
+      .comment("Ticks to keep suppressing after the player stops flying.")
+      .defineInRange("graceTicks", 10, 0, 200);
+
+   static {
+      BUILDER.pop();
       BUILDER.translation("ragdoll_reactions.configuration.suppression_rope_climbing").comment("Create Aeronautics Climbable Ropes suppression.").push("ropeClimbing");
    }
 
@@ -124,13 +136,16 @@ public final class ReactionConfig {
 
    static {
       BUILDER.pop();
-      BUILDER.translation("ragdoll_reactions.configuration.suppression_self_wind_charge").comment("Self-thrown wind charge suppression.").push("selfWindCharge");
+      BUILDER.translation("ragdoll_reactions.configuration.suppression_wind_charge").comment("Wind charge reaction suppression.").push("windCharge");
    }
 
-   public static final BooleanValue SUPPRESS_SELF_WIND_CHARGE_ENABLED = BUILDER.translation("ragdoll_reactions.configuration.suppression_enabled")
+   public static final BooleanValue SUPPRESS_ALL_WIND_CHARGES = BUILDER.translation("ragdoll_reactions.configuration.suppression_all_wind_charges")
+      .comment("When true, no wind charge explosions (from any source) will ragdoll players.")
+      .define("suppressAll", false);
+   public static final BooleanValue SUPPRESS_SELF_WIND_CHARGE = BUILDER.translation("ragdoll_reactions.configuration.suppression_self_wind_charge")
       .comment("When true, self-thrown wind charges will not ragdoll the throwing player.")
-      .define("enabled", true);
-   public static final IntValue SELF_WIND_CHARGE_GRACE_TICKS = BUILDER.translation("ragdoll_reactions.configuration.grace_ticks")
+      .define("suppressSelf", true);
+   public static final IntValue WIND_CHARGE_GRACE_TICKS = BUILDER.translation("ragdoll_reactions.configuration.grace_ticks")
       .comment("Ticks to suppress movement reactions after a self-thrown wind charge explodes.")
       .defineInRange("graceTicks", 10, 0, 200);
 
@@ -195,9 +210,9 @@ public final class ReactionConfig {
    public static final BooleanValue FALL_REACTIONS_ENABLED = BUILDER.translation("ragdoll_reactions.configuration.trigger_enabled")
       .comment("When true, landing from a high fall ragdolls the player.")
       .define("enabled", true);
-   public static final DoubleValue MIN_FALL_DISTANCE = BUILDER.translation("ragdoll_reactions.configuration.min_fall_distance")
-      .comment("Minimum fall distance (blocks) required to trigger a ragdoll.")
-      .defineInRange("minDistance", 6.0, 1.0, 256.0);
+   public static final DoubleValue MIN_FALL_DAMAGE = BUILDER.translation("ragdoll_reactions.configuration.min_fall_damage")
+      .comment("Minimum fall damage actually taken (after feather falling, protection, resistance, etc.) required to trigger a ragdoll.")
+      .defineInRange("minDamage", 4.0, 0.0, 1024.0);
    public static final DoubleValue FALL_SLAM_MULTIPLIER = BUILDER.translation("ragdoll_reactions.configuration.fall_slam_multiplier")
       .comment("Fraction of the landing impact speed driven downward to smash the ragdoll into the ground.")
       .defineInRange("slamMultiplier", 0.5, 0.0, 2.0);
@@ -288,12 +303,15 @@ public final class ReactionConfig {
       suppressions.bounce().setGraceTicks((Integer) BOUNCE_GRACE_TICKS.get());
       suppressions.elytraFlight().setEnabled((Boolean) SUPPRESS_ELYTRA_FLIGHT_ENABLED.get());
       suppressions.elytraFlight().setGraceTicks((Integer) ELYTRA_FLIGHT_GRACE_TICKS.get());
+      suppressions.creativeFlight().setEnabled((Boolean) SUPPRESS_CREATIVE_FLIGHT_ENABLED.get());
+      suppressions.creativeFlight().setGraceTicks((Integer) CREATIVE_FLIGHT_GRACE_TICKS.get());
       suppressions.ropeClimbing().setEnabled((Boolean) SUPPRESS_ROPE_CLIMBING_ENABLED.get());
       suppressions.ropeClimbing().setGraceTicks((Integer) ROPE_CLIMBING_GRACE_TICKS.get());
       suppressions.chainConveyor().setEnabled((Boolean) SUPPRESS_CHAIN_CONVEYOR_ENABLED.get());
       suppressions.chainConveyor().setGraceTicks((Integer) CHAIN_CONVEYOR_GRACE_TICKS.get());
-      suppressions.selfWindCharge().setEnabled((Boolean) SUPPRESS_SELF_WIND_CHARGE_ENABLED.get());
-      suppressions.selfWindCharge().setGraceTicks((Integer) SELF_WIND_CHARGE_GRACE_TICKS.get());
+      suppressions.windCharge().setSuppressAll((Boolean) SUPPRESS_ALL_WIND_CHARGES.get());
+      suppressions.windCharge().setSuppressSelf((Boolean) SUPPRESS_SELF_WIND_CHARGE.get());
+      suppressions.windCharge().setGraceTicks((Integer) WIND_CHARGE_GRACE_TICKS.get());
 
       ReactionSettings.Triggers triggers = ReactionSettings.triggers();
       triggers.impact().setEnabled((Boolean) IMPACT_ENABLED.get());
@@ -308,7 +326,7 @@ public final class ReactionConfig {
       triggers.vanillaExplosions().setRadiusPadding((Double) VANILLA_EXPLOSION_RADIUS_PADDING.get());
       triggers.vanillaExplosions().setLaunchMultiplier((Double) VANILLA_EXPLOSION_LAUNCH_MULTIPLIER.get());
       triggers.fall().setEnabled((Boolean) FALL_REACTIONS_ENABLED.get());
-      triggers.fall().setMinDistance((Double) MIN_FALL_DISTANCE.get());
+      triggers.fall().setMinDamage((Double) MIN_FALL_DAMAGE.get());
       triggers.fall().setSlamMultiplier((Double) FALL_SLAM_MULTIPLIER.get());
       triggers.crash().setEnabled((Boolean) CRASH_IMPACTS_ENABLED.get());
       triggers.crash().setMinDamage((Double) MIN_CRASH_DAMAGE.get());

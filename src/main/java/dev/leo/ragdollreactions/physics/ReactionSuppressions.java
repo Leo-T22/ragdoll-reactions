@@ -31,6 +31,8 @@ public final class ReactionSuppressions {
          grace = suppressions.bounce().graceTicks();
       } else if (suppressions.elytraFlight().enabled() && player.isFallFlying()) {
          grace = suppressions.elytraFlight().graceTicks();
+      } else if (suppressions.creativeFlight().enabled() && player.getAbilities().flying) {
+         grace = suppressions.creativeFlight().graceTicks();
       } else if (suppressions.ropeClimbing().enabled() && isMarkedAsRopeRiding(player)) {
          grace = suppressions.ropeClimbing().graceTicks();
       } else if (suppressions.chainConveyor().enabled() && isHangingOnChainConveyor(player)) {

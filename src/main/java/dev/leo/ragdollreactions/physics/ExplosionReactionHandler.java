@@ -41,6 +41,11 @@ public final class ExplosionReactionHandler {
          return;
       }
 
+      boolean isWindCharge = explosion.getDirectSourceEntity() instanceof WindCharge;
+      if (isWindCharge && ReactionSettings.suppressions().windCharge().suppressAll()) {
+         return;
+      }
+
       double effectiveRadius = power * 2.0 + vanillaExplosions.radiusPadding();
       ServerPlayer suppressedSelfWindChargeOwner = suppressedSelfWindChargeOwner(level, explosion);
       triggerExplosion(level, explosion.center(), power, effectiveRadius, vanillaExplosions.launchMultiplier(), "vanilla", suppressedSelfWindChargeOwner);
@@ -62,7 +67,7 @@ public final class ExplosionReactionHandler {
       double effectiveRadiusSqr = effectiveRadius * effectiveRadius;
       long gameTime = level.getGameTime();
       if (skippedPlayer != null) {
-         ReactionSuppressions.suppress(skippedPlayer, gameTime, ReactionSettings.suppressions().selfWindCharge().graceTicks());
+         ReactionSuppressions.suppress(skippedPlayer, gameTime, ReactionSettings.suppressions().windCharge().graceTicks());
       }
 
       for (ServerPlayer player : level.players()) {
@@ -109,8 +114,8 @@ public final class ExplosionReactionHandler {
    }
 
    private static ServerPlayer suppressedSelfWindChargeOwner(ServerLevel level, Explosion explosion) {
-      ReactionSettings.Suppression selfWindCharge = ReactionSettings.suppressions().selfWindCharge();
-      if (!selfWindCharge.enabled()) {
+      ReactionSettings.WindCharge windCharge = ReactionSettings.suppressions().windCharge();
+      if (!windCharge.suppressSelf()) {
          return null;
       }
 
