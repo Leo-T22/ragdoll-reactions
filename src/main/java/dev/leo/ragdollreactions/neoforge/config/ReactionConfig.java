@@ -58,7 +58,7 @@ public final class ReactionConfig {
 
    public static final BooleanValue DEBUG_LOGGING = BUILDER.translation("ragdoll_reactions.configuration.debug_logging")
       .comment("Log trigger details to the server console.")
-      .define("logging", true);
+      .define("logging", false);
 
    static {
       BUILDER.pop();
@@ -161,7 +161,7 @@ public final class ReactionConfig {
       .define("enabled", true);
    public static final DoubleValue MIN_VELOCITY_DELTA = BUILDER.translation("ragdoll_reactions.configuration.min_velocity_delta")
       .comment("Minimum horizontal player velocity change over the 5-tick window (m/s) required to trigger.")
-      .defineInRange("minVelocityDelta", 20.0, 0.1, 128.0);
+      .defineInRange("minVelocityDelta", 16.0, 0.1, 128.0);
    public static final DoubleValue MAX_VELOCITY_DELTA = BUILDER.translation("ragdoll_reactions.configuration.max_velocity_delta")
       .comment("Velocity changes above this (m/s) are ignored as teleports or anomalies rather than physical impacts.")
       .defineInRange("maxVelocityDelta", 120.0, 1.0, 1024.0);

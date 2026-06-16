@@ -61,13 +61,14 @@ public final class ImpactReactionHandler {
 
       LAST_PLAYER_SAMPLE_TICK.put(playerId, gameTime);
       Vec3 previousPosition = LAST_PLAYER_POSITION.put(playerId, currentPosition);
+      long nowNanos = System.nanoTime();
+      Long lastNanos = LAST_PLAYER_SAMPLE_NANOS.put(playerId, nowNanos);
       if (previousPosition == null) {
          return;
       }
 
-      long nowNanos = System.nanoTime();
-      Long lastNanos = LAST_PLAYER_SAMPLE_NANOS.put(playerId, nowNanos);
       if (lastNanos != null && nowNanos - lastNanos > LAG_SKIP_THRESHOLD_NANOS) {
+         resetMotionTracking(playerId, currentPosition, gameTime, nowNanos);
          return;
       }
 
@@ -79,6 +80,13 @@ public final class ImpactReactionHandler {
 
       LaunchSample launchSample = sampleCandidate(previousSample.blocksPerTick(), currentBlocksPerTick);
       if (launchSample == null) {
+         return;
+      }
+      ClientMotionTelemetry.Snapshot clientMotion = ClientMotionTelemetry.snapshot(player, gameTime);
+      double requiredClientAccel = ClientMotionTelemetry.requiredAccel(launchSample.deltaSpeed());
+      if (!clientMotion.fresh() || clientMotion.horizontalAccelMetersPerSecond() < requiredClientAccel) {
+         logRejectedCandidate(player, launchSample, clientMotion, requiredClientAccel);
+         resetMotionTracking(playerId, currentPosition, gameTime, nowNanos);
          return;
       }
 
@@ -138,6 +146,31 @@ public final class ImpactReactionHandler {
       return new LaunchSample(previousBlocksPerTick, currentBlocksPerTick, deltaBlocksPerTick, deltaSpeed, currentSpeed);
    }
 
+   private static void logRejectedCandidate(
+      ServerPlayer player,
+      LaunchSample launchSample,
+      ClientMotionTelemetry.Snapshot clientMotion,
+      double requiredClientAccel
+   ) {
+      if (!ReactionSettings.general().debug().logging()) {
+         return;
+      }
+
+      String reason = clientMotion.fresh() ? "client_accel_too_low" : "client_sample_stale_or_missing";
+      String age = clientMotion.ageTicks() == Long.MAX_VALUE ? "none" : Long.toString(clientMotion.ageTicks());
+      RagdollReactions.LOGGER.info(
+         "[ragdoll_reactions] {} rejected impact reason={} serverAccel={} m/s requiredClientAccel={} m/s serverSpeed={} m/s clientAccel={} m/s clientSpeed={} m/s clientAgeTicks={}",
+         player.getGameProfile().getName(),
+         reason,
+         ReactionLauncher.fmt(launchSample.deltaSpeed()),
+         ReactionLauncher.fmt(requiredClientAccel),
+         ReactionLauncher.fmt(launchSample.currentSpeed()),
+         ReactionLauncher.fmt(clientMotion.horizontalAccelMetersPerSecond()),
+         ReactionLauncher.fmt(clientMotion.horizontalSpeedMetersPerSecond()),
+         age
+      );
+   }
+
    private static Vector3d composeLaunchLinear(Vec3 previousBlocksPerTick, Vec3 currentBlocksPerTick, Vector3d deltaBlocksPerTick) {
       Vector3d previous = toMetersPerSecond(previousBlocksPerTick);
       Vector3d current = toMetersPerSecond(currentBlocksPerTick);
@@ -177,6 +210,7 @@ public final class ImpactReactionHandler {
    public static void onPlayerLoggedOut(ServerPlayer player) {
       clearMotionTracking(player.getUUID());
       ReactionSuppressions.clear(player.getUUID());
+      ClientMotionTelemetry.clear(player.getUUID());
    }
 
    private static void clearMotionTracking(UUID playerId) {
@@ -186,12 +220,20 @@ public final class ImpactReactionHandler {
       LAST_PLAYER_SAMPLE_NANOS.remove(playerId);
    }
 
+   private static void resetMotionTracking(UUID playerId, Vec3 currentPosition, long gameTime, long nowNanos) {
+      LAST_PLAYER_POSITION.put(playerId, currentPosition);
+      PLAYER_MOTION_HISTORY.remove(playerId);
+      LAST_PLAYER_SAMPLE_TICK.put(playerId, gameTime);
+      LAST_PLAYER_SAMPLE_NANOS.put(playerId, nowNanos);
+   }
+
    public static void resetState() {
       LAST_PLAYER_POSITION.clear();
       PLAYER_MOTION_HISTORY.clear();
       LAST_PLAYER_SAMPLE_TICK.clear();
       LAST_PLAYER_SAMPLE_NANOS.clear();
       ReactionSuppressions.reset();
+      ClientMotionTelemetry.reset();
    }
 
    private record MotionSample(long gameTime, Vec3 blocksPerTick) {

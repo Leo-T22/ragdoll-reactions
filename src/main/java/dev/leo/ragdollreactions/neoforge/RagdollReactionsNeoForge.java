@@ -2,6 +2,7 @@ package dev.leo.ragdollreactions.neoforge;
 
 import dev.leo.ragdollreactions.RagdollReactionsBootstrap;
 import dev.leo.ragdollreactions.neoforge.config.ReactionConfig;
+import dev.leo.ragdollreactions.neoforge.network.ReactionNetworking;
 import dev.leo.ragdollreactions.physics.CrashReactionHandler;
 import dev.leo.ragdollreactions.physics.ExplosionReactionHandler;
 import dev.leo.ragdollreactions.physics.FallReactionHandler;
@@ -33,6 +34,7 @@ public final class RagdollReactionsNeoForge {
    public RagdollReactionsNeoForge(IEventBus modBus, ModContainer modContainer) {
       modBus.addListener(ReactionConfig::onLoad);
       modBus.addListener(ReactionConfig::onReload);
+      modBus.addListener(ReactionNetworking::register);
       ReactionConfig.register(modContainer);
       ReactionSounds.register(modBus);
       modBus.addListener(RagdollReactionsNeoForge::onCommonSetup);
