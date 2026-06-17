@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.entity.projectile.windcharge.WindCharge;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.phys.Vec3;
@@ -77,6 +78,9 @@ public final class ExplosionReactionHandler {
          if (!ReactionLauncher.canTarget(player, gameTime)) {
             continue;
          }
+         if (isBlockingWithShield(player)) {
+            continue;
+         }
 
          Vec3 playerCenter = player.getBoundingBox().getCenter();
          double distanceSqr = playerCenter.distanceToSqr(center);
@@ -125,5 +129,9 @@ public final class ExplosionReactionHandler {
          return player;
       }
       return null;
+   }
+
+   private static boolean isBlockingWithShield(ServerPlayer player) {
+      return player.isBlocking() && player.getUseItem().getItem() instanceof ShieldItem;
    }
 }

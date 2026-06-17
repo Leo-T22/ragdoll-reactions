@@ -6,7 +6,7 @@ import dev.leo.sableplayerragdoll.api.RagdollAPI;
 import dev.leo.sableplayerragdoll.api.RagdollLaunchOptions;
 import dev.leo.sableplayerragdoll.api.RagdollLimbConfig;
 import dev.leo.sableplayerragdoll.api.RagdollLimbOptions;
-import dev.leo.sableplayerragdoll.api.RagdollSession;
+import dev.leo.sableplayerragdoll.api.RagdollWailingOptions;
 import dev.leo.sableplayerragdoll.block.entity.RagdollPartBlockEntity.BodyPart;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +21,14 @@ public final class ReactionLauncher {
    private static final double IMPACT_ARM_ROLL_DEGREES = 40.0;
    private static final double TRIGGER_WAILING_STIFFNESS = 90.0;
    private static final int TRIGGER_WAILING_TICKS = 40;
-   private static final RagdollLaunchOptions IMPACT_LAUNCH_OPTIONS = RagdollLaunchOptions.builder().limbs(impactPose()).build();
+   private static final RagdollLaunchOptions IMPACT_LAUNCH_OPTIONS = RagdollLaunchOptions.builder()
+      .limbs(impactPose())
+      .wailing(RagdollWailingOptions.builder()
+         .stiffness(TRIGGER_WAILING_STIFFNESS)
+         .durationTicks(TRIGGER_WAILING_TICKS)
+         .intervalTicks(10)
+         .build())
+      .build();
 
    private static final Map<UUID, Long> PLAYER_COOLDOWNS = new HashMap<>();
 
@@ -44,11 +51,9 @@ public final class ReactionLauncher {
    public static Vector3d launch(ServerPlayer player, long gameTime, Vector3d velocityMetersPerSecond) {
       Vector3d clamped = clampLinearVelocity(velocityMetersPerSecond);
       Vec3 launchVelocity = new Vec3(clamped.x, clamped.y, clamped.z);
-      RagdollSession session = RagdollAPI.launch(player, launchVelocity, IMPACT_LAUNCH_OPTIONS);
-      if (session == null) {
+      if (RagdollAPI.launch(player, launchVelocity, IMPACT_LAUNCH_OPTIONS) == null) {
          return null;
       }
-      session.applyWailing(TRIGGER_WAILING_STIFFNESS, TRIGGER_WAILING_TICKS, 10);
 
       PLAYER_COOLDOWNS.put(player.getUUID(), gameTime + (long) ReactionSettings.general().launch().cooldownTicks());
       playTriggerSound(player);

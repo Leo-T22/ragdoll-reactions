@@ -312,7 +312,7 @@ public final class ReactionSettings {
       private boolean enabled = true;
       private double minPower = 1.0;
       private double radiusPadding = 2.0;
-      private double launchMultiplier = 20.0;
+      private double launchMultiplier = 1.0;
 
       private CannonExplosions() {
       }
@@ -354,7 +354,7 @@ public final class ReactionSettings {
       private boolean enabled = true;
       private double minPower = 1.0;
       private double radiusPadding = 2.0;
-      private double launchMultiplier = 6.0;
+      private double launchMultiplier = 1.0;
 
       private VanillaExplosions() {
       }
