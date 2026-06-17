@@ -182,7 +182,7 @@ public final class ReactionConfig {
       .defineInRange("radiusPadding", 2.0, 0.0, 64.0);
    public static final DoubleValue CANNON_EXPLOSION_LAUNCH_MULTIPLIER = BUILDER.translation("ragdoll_reactions.configuration.cannon_explosion_launch_multiplier")
       .comment("Launch speed multiplier applied to cannon explosion power before the global max launch speed clamp.")
-      .defineInRange("launchMultiplier", 1.0, 0.0, 128.0);
+      .defineInRange("launchMultiplier", 15.0, 0.0, 128.0);
 
    static {
       BUILDER.pop();
@@ -200,7 +200,7 @@ public final class ReactionConfig {
       .defineInRange("radiusPadding", 2.0, 0.0, 64.0);
    public static final DoubleValue VANILLA_EXPLOSION_LAUNCH_MULTIPLIER = BUILDER.translation("ragdoll_reactions.configuration.vanilla_explosion_launch_multiplier")
       .comment("Launch speed multiplier applied to explosion power before the global max launch speed clamp.")
-      .defineInRange("launchMultiplier", 1.0, 0.0, 128.0);
+      .defineInRange("launchMultiplier", 15.0, 0.0, 128.0);
 
    static {
       BUILDER.pop();
