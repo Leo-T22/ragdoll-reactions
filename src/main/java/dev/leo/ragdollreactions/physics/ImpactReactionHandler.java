@@ -14,7 +14,7 @@ import org.joml.Vector3d;
 
 public final class ImpactReactionHandler {
    private static final double BLOCKS_PER_TICK_TO_METERS_PER_SECOND = 20.0;
-   private static final int STUMBLE_WINDOW_TICKS = 5;
+   private static final int STUMBLE_WINDOW_TICKS = 3;
    private static final long LAG_SKIP_THRESHOLD_NANOS = 100_000_000L;
 
    private static final Map<UUID, Vec3> LAST_PLAYER_POSITION = new HashMap<>();

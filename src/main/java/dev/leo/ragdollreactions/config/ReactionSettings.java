@@ -6,6 +6,7 @@ public final class ReactionSettings {
    private static final General GENERAL = new General();
    private static final Suppressions SUPPRESSIONS = new Suppressions();
    private static final Triggers TRIGGERS = new Triggers();
+   private static final Mobs MOBS = new Mobs();
 
    private ReactionSettings() {
    }
@@ -28,6 +29,10 @@ public final class ReactionSettings {
 
    public static Triggers triggers() {
       return TRIGGERS;
+   }
+
+   public static Mobs mobs() {
+      return MOBS;
    }
 
    public static final class General {
@@ -512,6 +517,149 @@ public final class ReactionSettings {
 
       public void setLaunchSpeed(double value) {
          launchSpeed = Math.max(0.0, value);
+      }
+   }
+
+   public static final class Mobs {
+      private boolean enabled = true;
+      private final Fall fall = new Fall();
+      private final MobDamage damage = new MobDamage();
+      private final Explosion explosion = new Explosion();
+      private final MobImpact impact = new MobImpact();
+
+      private Mobs() {
+      }
+
+      public boolean enabled() {
+         return enabled;
+      }
+
+      public void setEnabled(boolean value) {
+         enabled = value;
+      }
+
+      public Fall fall() {
+         return fall;
+      }
+
+      public MobDamage damage() {
+         return damage;
+      }
+
+      public Explosion explosion() {
+         return explosion;
+      }
+
+      public MobImpact impact() {
+         return impact;
+      }
+   }
+
+   public static final class MobImpact {
+      private boolean enabled = true;
+      private double minSpeed = 4.0;
+      private double launchMultiplier = 1.0;
+
+      private MobImpact() {
+      }
+
+      public boolean enabled() {
+         return enabled;
+      }
+
+      public void setEnabled(boolean value) {
+         enabled = value;
+      }
+
+      public double minSpeed() {
+         return minSpeed;
+      }
+
+      public void setMinSpeed(double value) {
+         minSpeed = Math.max(0.1, value);
+      }
+
+      public double launchMultiplier() {
+         return launchMultiplier;
+      }
+
+      public void setLaunchMultiplier(double value) {
+         launchMultiplier = Math.max(0.0, value);
+      }
+   }
+
+   public static final class MobDamage {
+      private boolean enabled = true;
+      private double healthFraction = 1.0 / 3.0;
+      private double launchMultiplier = 1.5;
+
+      private MobDamage() {
+      }
+
+      public boolean enabled() {
+         return enabled;
+      }
+
+      public void setEnabled(boolean value) {
+         enabled = value;
+      }
+
+      public double healthFraction() {
+         return healthFraction;
+      }
+
+      public void setHealthFraction(double value) {
+         healthFraction = Math.max(0.0, value);
+      }
+
+      public double launchMultiplier() {
+         return launchMultiplier;
+      }
+
+      public void setLaunchMultiplier(double value) {
+         launchMultiplier = Math.max(0.0, value);
+      }
+   }
+
+   public static final class Explosion {
+      private boolean enabled = true;
+      private double minPower = 1.0;
+      private double radiusPadding = 2.0;
+      private double launchMultiplier = 15.0;
+
+      private Explosion() {
+      }
+
+      public boolean enabled() {
+         return enabled;
+      }
+
+      public void setEnabled(boolean value) {
+         enabled = value;
+      }
+
+      public double minPower() {
+         return minPower;
+      }
+
+      public void setMinPower(double value) {
+         minPower = Math.max(0.0, value);
+      }
+
+      public double radiusPadding() {
+         return radiusPadding;
+      }
+
+      public void setRadiusPadding(double value) {
+         radiusPadding = Math.max(0.0, value);
+      }
+
+      public double launchMultiplier() {
+         return launchMultiplier;
+      }
+
+      public void setLaunchMultiplier(double value) {
+         launchMultiplier = Math.max(0.0, value);
       }
    }
 }

@@ -54,6 +54,7 @@
   "ragdoll_reactions.configuration.heavy_hits": "Heavy Hits",
   "ragdoll_reactions.configuration.hit_reactions_enabled": "Enable Heavy Hits",
   "ragdoll_reactions.configuration.min_hit_damage": "Minimum Hit Damage",
+  "ragdoll_reactions.configuration.damage_health_fraction": "Damage Health Fraction",
   "ragdoll_reactions.configuration.hit_launch_multiplier": "Hit Launch Multiplier",
   "ragdoll_reactions.configuration.lightning": "Lightning",
   "ragdoll_reactions.configuration.lightning_reactions_enabled": "Enable Lightning Strikes",
@@ -65,5 +66,12 @@
   "ragdoll_reactions.configuration.launch": "Launch",
   "ragdoll_reactions.configuration.max_launch_speed": "Max Launch Speed",
   "ragdoll_reactions.configuration.debug": "Debug",
-  "ragdoll_reactions.configuration.debug_logging": "Debug Logging"
+  "ragdoll_reactions.configuration.debug_logging": "Debug Logging",
+  "ragdoll_reactions.configuration.mobs": "Mobs",
+  "ragdoll_reactions.configuration.mobs_enabled": "Enable Mob Reactions",
+  "ragdoll_reactions.configuration.trigger_damage": "Damage",
+  "ragdoll_reactions.configuration.trigger_explosion": "Explosion",
+  "ragdoll_reactions.configuration.min_explosion_power": "Min Explosion Power",
+  "ragdoll_reactions.configuration.explosion_radius_padding": "Explosion Radius Padding",
+  "ragdoll_reactions.configuration.explosion_launch_multiplier": "Explosion Launch Multiplier"
 }
